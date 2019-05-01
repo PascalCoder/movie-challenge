@@ -9,6 +9,7 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Toast;
 
 import com.example.movieschallenge.R;
@@ -18,7 +19,7 @@ import com.example.movieschallenge.presenter.Presenter;
 
 public class MainActivity extends AppCompatActivity implements ViewContract, SearchView.OnQueryTextListener{
 
-    RecyclerView recyclerView;
+    static RecyclerView recyclerView;
     Presenter presenter;
     static Handler handler;
 
@@ -62,6 +63,7 @@ public class MainActivity extends AppCompatActivity implements ViewContract, Sea
 
         MenuItem menuItem = menu.findItem(R.id.action_search);
         SearchView searchView = (SearchView)menuItem.getActionView();
+        searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
         searchView.setOnQueryTextListener(this);
 
         MenuItem.OnActionExpandListener onActionExpandListener = new MenuItem.OnActionExpandListener() {
@@ -79,6 +81,8 @@ public class MainActivity extends AppCompatActivity implements ViewContract, Sea
 
         MenuItem searchItem = menu.findItem(R.id.action_search);
         searchItem.setOnActionExpandListener(onActionExpandListener);
+
+        //searchItem.
 
         return true; //super.onCreateOptionsMenu(menu)
     }
@@ -103,11 +107,13 @@ public class MainActivity extends AppCompatActivity implements ViewContract, Sea
     public boolean onQueryTextSubmit(String s) {
         String userInput = s.toLowerCase();
 
-        return false;
+        return true;
     }
 
     @Override
     public boolean onQueryTextChange(String s) {
+        CustomAdapter customAdapter = (CustomAdapter) recyclerView.getAdapter();
+        customAdapter.getFilter().filter(s);
         return false;
     }
 }

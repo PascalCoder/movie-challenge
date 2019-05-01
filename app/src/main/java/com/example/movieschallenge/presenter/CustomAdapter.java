@@ -63,7 +63,6 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.CustomView
                 filteredList.addAll(filteredMovies);
             }else {
                 String filterPattern = constraint.toString().toLowerCase().trim();
-                //String genreFilterPattern = constraint.toString().toLowerCase().trim();
 
                 for(Movie movie : filteredMovies){
                     if(movie.getTitle().toLowerCase().contains(filterPattern)
