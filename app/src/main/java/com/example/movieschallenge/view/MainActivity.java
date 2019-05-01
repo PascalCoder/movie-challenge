@@ -1,6 +1,5 @@
 package com.example.movieschallenge.view;
 
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -19,9 +18,8 @@ import com.example.movieschallenge.presenter.Presenter;
 
 public class MainActivity extends AppCompatActivity implements ViewContract, SearchView.OnQueryTextListener{
 
-    static RecyclerView recyclerView;
+    RecyclerView recyclerView;
     Presenter presenter;
-    static Handler handler;
 
     Toolbar toolbar;
 
@@ -42,19 +40,29 @@ public class MainActivity extends AppCompatActivity implements ViewContract, Sea
         presenter.initializeRetrofit();
         presenter.getMovies();
 
+        Thread thread = new Thread(){
+            public void run(){
+                while(!isInterrupted()){
+                    try{
+                        Thread.sleep(600_000);
 
-        handler = new Handler();
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                handler.postDelayed(this, 5000);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                presenter.bindView(MainActivity.this);
+                                presenter.initializeRetrofit();
+                                presenter.getMovies();
+
+                                Toast.makeText(MainActivity.this, "App restarted!", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }catch (InterruptedException ie){
+                        ie.printStackTrace();
+                    }
+                }
             }
         };
-        handler.post(runnable);
-
-        Runnable runnable1 = () -> {
-
-        };
+        thread.start();
     }
 
     @Override
@@ -82,9 +90,7 @@ public class MainActivity extends AppCompatActivity implements ViewContract, Sea
         MenuItem searchItem = menu.findItem(R.id.action_search);
         searchItem.setOnActionExpandListener(onActionExpandListener);
 
-        //searchItem.
-
-        return true; //super.onCreateOptionsMenu(menu)
+        return true;
     }
 
     @Override
@@ -100,12 +106,10 @@ public class MainActivity extends AppCompatActivity implements ViewContract, Sea
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        //handler.removeCallbacks();
     }
 
     @Override
     public boolean onQueryTextSubmit(String s) {
-        String userInput = s.toLowerCase();
 
         return true;
     }
